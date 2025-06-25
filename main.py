@@ -7,7 +7,11 @@ from datetime import datetime, timezone
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from urllib.parse import urlparse
+from concurrent.futures import ThreadPoolExecutor
 import whois
+import dns.resolver
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
 with open('/home/lenovo/python-project/Passive Scanner/wordlist.txt', 'r') as f:
     wordlist = [re.sub(r'\s+', '', line) for line in f if line.strip()]
@@ -20,6 +24,8 @@ def header_analysis(url):
     try:
         response = requests.get(url, timeout=5)
         headers = response.headers
+        soup = BeautifulSoup(response.text, 'html.parser')
+        meta_generator = soup.find('meta', attrs={'name': 'generator'})
         report = {}
         report["Server"] = headers.get("Server", "NO")
         report["X-Powered-By"] = headers.get("X-Powered-By", "NO")
@@ -30,6 +36,10 @@ def header_analysis(url):
         report["Referrer-Policy"] = headers.get("Referrer-Policy", "NO")
         report["Permissions-Policy"] = headers.get("Permissions-Policy", "NO")
         print("------Header Analysis result------")
+        if meta_generator and meta_generator.has_attr('content'):
+                print(f"CMS/Generator: {meta_generator['content']}")
+        if 'wp-settings-1' in response.cookies:
+                print(f"Technology: WordPress (It was understood from the cookie trace)")
         for key, value in report.items():
             print(f"{key}: {value}")
         print("\nSafety Warnings!!!\n")
@@ -43,6 +53,7 @@ def header_analysis(url):
             print("- HSTS policy is missing")
     except requests.exceptions.RequestException as e:
         print("Connection error", e)
+   
 
 def ssl_certificate_check(domain, port=443):
     context = ssl.create_default_context()
@@ -156,6 +167,80 @@ def options_check(url):
     except Exception as e:
         print(f"Error checking Options: {e}")
 
+def dns_lookup(domain):
+    print("------DNS Records------")
+    record_types = ['A', 'AAAA', 'MX', 'TXT', 'NS']
+    for record_type in record_types:
+        try:
+            answers = dns.resolver.resolve(domain, record_type)
+            print(f"\n[+] {record_type} Records: ")
+            for rdata in answers:
+                if record_type =='MX':
+                    print(f"  -Priority: {rdata.prefences}, Server: {rdata.extended_rdatatype.to_text()}")
+                else:
+                    print(f" -{rdata.to_text()}")
+        except dns.resolver.NoAnswer:
+            print(f"\n[!] {record_type} no found")
+        except dns.resolver.NXDOMAIN:
+            print(f"\n[!] Error: {domain} no found")
+            return
+        except Exception as e:
+            print(f"Error: {e}")
+
+def check_port(domain, port):
+    try:
+        with socket.create_connection((domain, port), timeout=0.5):
+           print(f"[+] Port {port} OPEN")
+           return port, True
+    except (socket.timeout, ConnectionRefusedError, OSError):
+        return port, False
+    
+def port_scan(domain):
+    print(f"---------Port Scan {domain} ---------")
+    common_ports = [21, 22, 23, 25, 53, 80, 110, 143, 443, 445, 993, 995, 1723, 3306, 3389, 5900, 8080, 8443]
+    open_ports = []
+
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        results = executor.map(lambda port: check_port(domain, port), common_ports)
+
+        for port, is_open in results:
+            if is_open:
+                open_ports.append(port)
+
+    if not open_ports:
+        print(f"[-] None of the common ports scanned are open")
+    if open_ports:
+        print(f"[+] Open ports: {open_ports}")
+
+
+
+def find_sensitive_files(url):
+    
+    print(f"------ Precise File Scanning: {url} ------")
+    sensitive_paths = [
+        '.git/config',      
+        '.env',            
+        'app.log',         
+        'error.log',   
+        'backup.zip',     
+        'database.sql',   
+        'config.php.bak'    
+    ]
+    
+    found_any = False
+    for path in sensitive_paths:
+        full_url = urljoin(url, path)
+        try:
+            response = requests.get(full_url, timeout=3, allow_redirects=False)
+            if response.status_code == 200:
+                print(f"[!!!] CRITICAL: Sensitive file found: {full_url} (Status: 200)")
+                found_any = True
+        except requests.RequestException:
+            pass
+            
+    if not found_any:
+        print("[-] None of the known sensitive files were found.")
+
 
 # ----------------------------------Start the Program---------------------------------- #
 
@@ -172,7 +257,10 @@ def main_menu():
         print("5. robots.txt Check")
         print("6. WHOIS Lookup")
         print("7. HTTP Options Check")
-        print("8. Run All")
+        print("8. DNS lookup")
+        print("9. Port Scan")
+        print("10. Sensitive Files Scan")
+        print("11. Run All")
         print("0. Exit")
 
         choice = input("Select an option: ").strip()
@@ -192,6 +280,12 @@ def main_menu():
         elif choice == "7":
             options_check(url)
         elif choice == "8":
+            dns_lookup(domain)
+        elif choice == "9":
+            port_scan(domain)
+        elif choice == "10":
+            find_sensitive_files(url)
+        elif choice == "11":
             header_analysis(url)
             ssl_certificate_check(domain)
             subdomain_test(domain, wordlist)
@@ -199,6 +293,10 @@ def main_menu():
             robots_txt_check(url)
             whois_lookup(domain)
             options_check(url)
+            dns_lookup(domain)
+            port_scan(domain)
+            find_sensitive_files(url)
+            
         elif choice == "0":
             print("Exiting program.")
             break

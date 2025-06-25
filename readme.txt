@@ -100,7 +100,6 @@ python scanner.py
 
 📧 İletişim / Contact
 
-GitHub: mtezcan0
-
-E-mail: mtezcan.tr@gmail.com
+- GitHub: [mtezcan0](https://github.com/mtezcan0)  
+- E-mail: <mehmet.tezcan.tr@gmail.com>
 

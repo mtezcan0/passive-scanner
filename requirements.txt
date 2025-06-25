@@ -1,0 +1,6 @@
+requests
+cryptography
+python-whois
+dnspython
+beautifulsoup4
+colorama

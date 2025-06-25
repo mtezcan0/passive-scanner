@@ -1,52 +1,106 @@
-# Passive Scanner
+🇹🇷 
 
-## English
+Pass​ive Scanner, web hedefleri üzerinde pasif keşif ve bilgi toplama işlemini kolaylaştırmak amacıyla Python’la geliştirdiğim ilk ve en kapsamlı projelerimden biridir. Bu araç, bir web sitesinin dış yüzeyini analiz ederek potansiyel güvenlik yapılandırma hatalarını ve bilgi sızıntılarını tespit etmeye odaklanır.
 
-This is one of my first coding projects — a Passive Scanner tool written in Python.  
-The tool performs basic passive security checks on a given website URL, including:
+Geliştirme sürecinde öğrendiklerim:
 
-- HTTP header analysis  
-- SSL certificate validity check  
-- Subdomain enumeration using a wordlist  
-- Directory scanning using a wordlist  
-- Robots.txt file fetching and parsing  
-- Whois lookup for domain information  
-- HTTP OPTIONS method check  
+Çoklu iş parçacığı (threading) ile performans optimizasyonu
 
-The project helped me learn threading, networking, requests handling, and working with external libraries such as `cryptography` and `whois`.  
-I am continuously improving the code and plan to add a unified menu interface to make it easier to use.
+Socket programlama ile ağ temelleri ve port taraması
 
-Feel free to explore, test, and give feedback!
+HTTP/S protokolleri üzerinden header analizi
 
----
+cryptography kütüphanesi ile SSL/TLS sertifika inceleme
 
-## Türkçe
+whois kütüphanesi ile domain sahibi ve kayıt detaylarını öğrenme
 
-Bu proje, kodlama kariyerimin ilk adımlarından biri olan Python ile yazılmış bir Passive Scanner aracıdır.  
-Verilen bir web sitesi URL’si üzerinde şu pasif güvenlik testlerini yapar:
+robots.txt ve dizin taraması ile gizli kaynak keşfi
 
-- HTTP başlık (header) analizi  
-- SSL sertifikasının geçerlilik kontrolü  
-- Kelime listesi kullanarak alt alan adı (subdomain) taraması  
-- Kelime listesi kullanarak dizin (directory) taraması  
-- Robots.txt dosyasını çekme ve analiz etme  
-- Domain bilgisi için Whois sorgulaması  
-- HTTP OPTIONS metodu kontrolü  
+HTTP OPTIONS kontrolü ile izin verilen metodları listeleme
 
-Bu proje sayesinde threading (çoklu iş parçacığı), ağ programlama, HTTP istekleri ve `cryptography`, `whois` gibi dış kütüphanelerle çalışma konusunda deneyim kazandım.  
-Kodları geliştirmeye devam ediyorum ve tüm fonksiyonları tek bir menü altında toplamak istiyorum.
+Bu araç, siber güvenlik ve Python öğrenme yolculuğumun dönüm noktalarından biri oldu. Hem yeni başlayanlar için eğitim materyali, hem de hızlı ön analiz yapmak isteyen uzmanlar için pratik bir CLI (Command‑Line Interface) aracı olarak tasarlandı.
 
-Projeyi inceleyebilir, deneyebilir ve geri bildirimde bulunabilirsiniz!
+🇬🇧 English 
 
----
+Passive Recon Scanner is one of my first and most ambitious Python projects aimed at passive reconnaissance and information gathering on web targets. By analyzing a site's public-facing surface, it quickly identifies potential misconfigurations and data leaks.
 
-## Requirements / Gereksinimler
+Key learnings and features during development:
 
-- Python 3.x  
-- requests  
-- cryptography  
-- python-whois  
+Performance optimization with multi-threading
 
-Install with:  
-```bash
-pip install requests cryptography python-whois
+Networking fundamentals and port scanning using sockets
+
+HTTP/S header analysis for security policy detection
+
+Deep SSL/TLS certificate inspection using the cryptography library
+
+Domain registration details via the whois library
+
+Hidden paths discovery through robots.txt and directory enumeration
+
+HTTP OPTIONS method enumeration for allowed HTTP verbs
+
+This tool marks a milestone in my cybersecurity and Python journey. It serves both as a learning resource for beginners and a rapid CLI utility for seasoned professionals.
+
+✨ Detaylı Özellikler / Features in Detail
+
+🔹 Header Analizi / Header Analysis
+
+CSP, HSTS, X-Frame-Options gibi kritik güvenlik başlıklarının varlığını ve yapılandırmasını kontrol eder.
+
+🔹 SSL Sertifika Kontrolü / SSL Certificate Check
+
+Sertifikanın yetkilisi, geçerlilik tarihleri, imza algoritması gibi detayları inceler.
+
+🔹 Alt Alan Adı ve Dizin Taraması / Subdomain & Directory Scanning
+
+Yaygın wordlist’lerle gizli veya unutulmuş alt alan adları ve dizinler keşfeder.
+
+🔹 Robots.txt Analizi / Robots.txt Analyzer
+
+robots.txt içindeki Disallow ve Allow kurallarına göre potansiyel gizli yolları ifşa eder.
+
+🔹 Whois Sorgusu / Whois Lookup
+
+Alan adının kayıt bilgileri, DNS sunucuları, kayıt/sona erme tarihleri gibi bilgileri listeler.
+
+🔹 HTTP Metot Kontrolü / HTTP OPTIONS Check
+
+Sunucunun hangi HTTP metodlarını kabul ettiğini belirler (GET, POST, PUT, DELETE vs.).
+
+🛠️ Kurulum & Başlangıç / Getting Started
+
+Ön Gereksinimler / Prerequisites
+
+Python 3.9+
+
+Git
+
+Projeyi Klonlama / Cloning the Repo
+
+git clone https://github.com/mtezcan0/passive-scanner.git
+cd passive-scanner
+
+Sanal Ortam Oluşturma / Setup Virtual Environment
+
+python3 -m venv venv
+source venv/bin/activate       # Linux/macOS
+venv\Scripts\activate        # Windows
+
+Bağımlılıkları Yükleme / Install Dependencies
+
+pip install -r requirements.txt
+
+Çalıştırma / Run the Scanner
+
+python scanner.py
+
+
+
+
+📧 İletişim / Contact
+
+GitHub: mtezcan0
+
+E-mail: mtezcan.tr@gmail.com
+

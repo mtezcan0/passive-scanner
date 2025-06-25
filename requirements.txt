@@ -1,6 +1,6 @@
-requests
-cryptography
-python-whois
-dnspython
-beautifulsoup4
-colorama
+requests>=2.25.1
+cryptography>=3.4.7
+python-whois>=0.7.3
+dnspython>=2.3.0
+beautifulsoup4>=4.10.0
+colorama>=0.4.4
